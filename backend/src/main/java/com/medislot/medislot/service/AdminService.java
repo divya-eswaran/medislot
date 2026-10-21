@@ -23,19 +23,23 @@ public class AdminService {
     private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
+    private final AppointmentService appointmentService;
 
     public AdminService(
             PatientRepository patientRepository,
             DoctorRepository doctorRepository,
             AppointmentRepository appointmentRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            AppointmentService appointmentService) {
         this.patientRepository = patientRepository;
         this.doctorRepository = doctorRepository;
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
+        this.appointmentService = appointmentService;
     }
 
     public AdminStatsDto getDashboardStats() {
+        appointmentService.autoUpdatePastAppointments();
         AdminStatsDto stats = new AdminStatsDto();
 
         stats.setTotalPatients(patientRepository.count());

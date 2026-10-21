@@ -49,6 +49,14 @@ public class AdminStatsDto {
         this.pendingDoctorAccounts = pendingDoctorAccounts;
     }
 
+    public long getPendingDoctors() {
+        return pendingDoctorAccounts;
+    }
+
+    public void setPendingDoctors(long pendingDoctors) {
+        this.pendingDoctorAccounts = pendingDoctors;
+    }
+
     public long getTotalAppointments() {
         return totalAppointments;
     }

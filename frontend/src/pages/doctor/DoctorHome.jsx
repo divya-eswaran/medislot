@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { StatCard, Card, Badge, Spinner } from '../../components/ui'
 import { Calendar, Clock, CheckCircle, Users, Stethoscope } from 'lucide-react'
 import { format } from 'date-fns'
+import { formatDoctorName } from '../../utils/formatters'
 
 export default function DoctorHome() {
   const { user } = useAuth()
@@ -38,7 +39,7 @@ export default function DoctorHome() {
         <p className="text-teal-100 text-sm mb-1">
           {format(new Date(), 'EEEE, MMMM dd, yyyy')}
         </p>
-        <h2 className="text-3xl font-bold mb-2">Dr. {user?.name} 👨‍⚕️</h2>
+        <h2 className="text-3xl font-bold mb-2">{formatDoctorName(user?.name)} 👨‍⚕️</h2>
         <p className="text-teal-100 text-sm">
           You have <strong>{stats.todayPending}</strong> upcoming appointment{stats.todayPending !== 1 ? 's' : ''} today
         </p>

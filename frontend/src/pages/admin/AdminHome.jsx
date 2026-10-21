@@ -86,7 +86,7 @@ export default function AdminHome() {
           { label: 'Active Doctors', value: stats?.activeDoctors ?? '—', color: 'bg-teal-50 text-teal-700' },
           { label: 'Active Patients', value: stats?.activePatients ?? '—', color: 'bg-blue-50 text-blue-700' },
           { label: "Today's Appointments", value: stats?.todayAppointments ?? '—', color: 'bg-purple-50 text-purple-700' },
-          { label: 'Pending Doctor Approvals', value: stats?.pendingDoctors ?? '—', color: 'bg-amber-50 text-amber-700' },
+          { label: 'Pending Doctor Approvals', value: stats?.pendingDoctors ?? stats?.pendingDoctorAccounts ?? 0, color: 'bg-amber-50 text-amber-700' },
         ].map(s => (
           <Card key={s.label} className={`p-4 ${s.color}`}>
             <p className="text-2xl font-bold">{s.value}</p>

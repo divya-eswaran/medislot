@@ -4,6 +4,7 @@ import { Card, Badge, Modal, Button, Spinner, EmptyState, Textarea } from '../..
 import { Calendar, CheckCircle, XCircle, Stethoscope, Plus, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
+import { isUpcomingAppointment } from '../../utils/formatters'
 
 export default function DoctorAppointments() {
   const [appointments, setAppointments] = useState([])
@@ -141,13 +142,15 @@ export default function DoctorAppointments() {
                   {['CONFIRMED', 'PENDING'].includes(apt.status) && (
                     <>
                       <button onClick={() => setConsultModal(apt)}
-                        className="px-3 py-1.5 text-xs font-semibold text-teal-700 border border-teal-300 rounded-lg hover:bg-teal-50 transition-all flex items-center gap-1">
+                        className="px-3 py-1.5 text-xs font-semibold text-teal-700 border border-teal-300 rounded-lg hover:bg-teal-50 transition-all flex items-center gap-1 cursor-pointer">
                         <Stethoscope size={13} /> Complete
                       </button>
-                      <button onClick={() => setCancelModal(apt)}
-                        className="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-all">
-                        Cancel
-                      </button>
+                      {isUpcomingAppointment(apt.appointmentDate, apt.startTime) && (
+                        <button onClick={() => setCancelModal(apt)}
+                          className="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-all cursor-pointer">
+                          Cancel
+                        </button>
+                      )}
                     </>
                   )}
                 </div>

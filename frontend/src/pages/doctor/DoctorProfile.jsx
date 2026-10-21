@@ -3,6 +3,7 @@ import { doctorAPI } from '../../api/services'
 import { Card, Button, Input, Select, Spinner } from '../../components/ui'
 import { User, Save } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { formatDoctorName, getDoctorInitial } from '../../utils/formatters'
 
 export default function DoctorProfile() {
   const [form, setForm] = useState({})
@@ -42,10 +43,10 @@ export default function DoctorProfile() {
       <Card className="p-6 space-y-5">
         <div className="flex items-center gap-4">
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-700 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-            {form.name?.charAt(0) || 'D'}
+            {getDoctorInitial(form.fullName || form.name)}
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-800">Dr. {form.name}</h3>
+            <h3 className="text-xl font-bold text-slate-800">{formatDoctorName(form.fullName || form.name)}</h3>
             <p className="text-slate-500 text-sm">{form.email}</p>
             <p className="text-teal-600 text-sm font-medium">{form.specializationName}</p>
           </div>

@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 public class DoctorCreateRequest {
 
-    @NotBlank(message = "Doctor full name is required")
     private String fullName;
+    private String name;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
@@ -35,11 +35,25 @@ public class DoctorCreateRequest {
     }
 
     public String getFullName() {
-        return fullName;
+        return fullName != null && !fullName.trim().isEmpty() ? fullName : name;
     }
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+        if (this.name == null) {
+            this.name = fullName;
+        }
+    }
+
+    public String getName() {
+        return getFullName();
+    }
+
+    public void setName(String name) {
+        this.name = name;
+        if (this.fullName == null) {
+            this.fullName = name;
+        }
     }
 
     public String getEmail() {

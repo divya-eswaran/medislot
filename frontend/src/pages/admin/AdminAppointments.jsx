@@ -4,6 +4,7 @@ import { Card, Badge, Spinner, EmptyState, Modal, Button } from '../../component
 import { Calendar, XCircle, Filter } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
+import { formatDoctorName, isUpcomingAppointment } from '../../utils/formatters'
 
 export default function AdminAppointments() {
   const [appointments, setAppointments] = useState([])
@@ -85,8 +86,8 @@ export default function AdminAppointments() {
                       <p className="font-semibold text-slate-800 text-sm">{apt.patientName}</p>
                     </td>
                     <td className="py-3 px-4">
-                      <p className="text-sm text-slate-700">Dr. {apt.doctorName}</p>
-                      <p className="text-xs text-teal-600">{apt.specialization}</p>
+                      <p className="text-sm font-medium text-slate-800">{formatDoctorName(apt.doctorName)}</p>
+                      <p className="text-xs text-teal-600">{apt.specialization || apt.doctorSpecialization}</p>
                     </td>
                     <td className="py-3 px-4 text-sm text-slate-600">
                       {apt.appointmentDate ? format(new Date(apt.appointmentDate), 'MMM dd, yyyy') : '—'}
@@ -94,9 +95,9 @@ export default function AdminAppointments() {
                     <td className="py-3 px-4 text-sm text-slate-600">{apt.startTime}</td>
                     <td className="py-3 px-4"><Badge status={apt.status} /></td>
                     <td className="py-3 px-4">
-                      {['PENDING', 'CONFIRMED'].includes(apt.status) && (
+                      {['PENDING', 'CONFIRMED'].includes(apt.status) && isUpcomingAppointment(apt.appointmentDate, apt.startTime) && (
                         <button onClick={() => setCancelModal(apt)}
-                          className="flex items-center gap-1 text-xs font-semibold text-red-600 border border-red-200 px-2 py-1 rounded-lg hover:bg-red-50 transition-all">
+                          className="flex items-center gap-1 text-xs font-semibold text-red-600 border border-red-200 px-2 py-1 rounded-lg hover:bg-red-50 transition-all cursor-pointer">
                           <XCircle size={12} /> Cancel
                         </button>
                       )}
@@ -111,7 +112,7 @@ export default function AdminAppointments() {
 
       <Modal isOpen={!!cancelModal} onClose={() => setCancelModal(null)} title="Cancel Appointment">
         <div className="space-y-4">
-          <p className="text-sm text-slate-600">Cancel appointment for <strong>{cancelModal?.patientName}</strong> with <strong>Dr. {cancelModal?.doctorName}</strong>.</p>
+          <p className="text-sm text-slate-600">Cancel appointment for <strong>{cancelModal?.patientName}</strong> with <strong>{formatDoctorName(cancelModal?.doctorName)}</strong>.</p>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Reason *</label>
             <textarea value={reason} onChange={e => setReason(e.target.value)} rows={3}

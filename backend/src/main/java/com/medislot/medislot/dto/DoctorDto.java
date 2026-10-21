@@ -55,6 +55,14 @@ public class DoctorDto {
         this.fullName = fullName;
     }
 
+    public String getName() {
+        return fullName;
+    }
+
+    public void setName(String name) {
+        this.fullName = name;
+    }
+
     public String getPhone() {
         return phone;
     }

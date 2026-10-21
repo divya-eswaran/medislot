@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { StatCard, Badge, Card, Spinner } from '../../components/ui'
 import { Calendar, Clock, CheckCircle, XCircle, Plus, ChevronRight, Stethoscope } from 'lucide-react'
 import { format } from 'date-fns'
+import { formatDoctorName, getDoctorInitial } from '../../utils/formatters'
 
 export default function PatientHome() {
   const { user } = useAuth()
@@ -82,11 +83,11 @@ export default function PatientHome() {
             {recent.map(apt => (
               <div key={apt.id} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-all">
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-sm font-bold flex-shrink-0">
-                  {apt.doctorName?.charAt(0) || 'D'}
+                  {getDoctorInitial(apt.doctorName)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-slate-800 text-sm truncate">Dr. {apt.doctorName}</p>
-                  <p className="text-xs text-slate-500">{apt.specialization}</p>
+                  <p className="font-semibold text-slate-800 text-sm truncate">{formatDoctorName(apt.doctorName)}</p>
+                  <p className="text-xs text-slate-500">{apt.specialization || apt.doctorSpecialization}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className="text-sm font-medium text-slate-700">

@@ -417,7 +417,22 @@ public class AppointmentService {
         return mapToDto(appointment);
     }
 
+    @Transactional
+    public void autoUpdatePastAppointments() {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        List<Appointment> pastAppointments = appointmentRepository.findPastUncompletedAppointments(today, now);
+        if (!pastAppointments.isEmpty()) {
+            for (Appointment a : pastAppointments) {
+                a.setStatus(AppointmentStatus.COMPLETED);
+            }
+            appointmentRepository.saveAll(pastAppointments);
+        }
+    }
+
+    @Transactional
     public List<AppointmentDto> getAppointmentsForPatient(String userEmail) {
+        autoUpdatePastAppointments();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Patient patient = patientRepository.findByUserId(user.getId())
@@ -429,7 +444,9 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<AppointmentDto> getAppointmentsForDoctor(String userEmail) {
+        autoUpdatePastAppointments();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Doctor doctor = doctorRepository.findByUserId(user.getId())
@@ -441,7 +458,9 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<AppointmentDto> getTodayAppointmentsForDoctor(String userEmail) {
+        autoUpdatePastAppointments();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Doctor doctor = doctorRepository.findByUserId(user.getId())
@@ -453,7 +472,9 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<AppointmentDto> getAllAppointmentsForAdmin() {
+        autoUpdatePastAppointments();
         return appointmentRepository.findAll().stream()
                 .sorted(Comparator.comparing(Appointment::getAppointmentDate).reversed()
                         .thenComparing(Appointment::getStartTime).reversed())
@@ -494,7 +515,17 @@ public class AppointmentService {
         dto.setStartTime(a.getStartTime());
         dto.setEndTime(a.getEndTime());
         dto.setTokenNumber(a.getTokenNumber());
-        dto.setStatus(a.getStatus());
+
+        AppointmentStatus status = a.getStatus();
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        if ((status == AppointmentStatus.CONFIRMED || status == AppointmentStatus.PENDING) &&
+                (a.getAppointmentDate().isBefore(today) ||
+                        (a.getAppointmentDate().isEqual(today) && a.getEndTime() != null && a.getEndTime().isBefore(now)))) {
+            status = AppointmentStatus.COMPLETED;
+        }
+        dto.setStatus(status);
+
         dto.setReason(a.getReason());
         dto.setCancelReason(a.getCancelReason());
         dto.setCreatedAt(a.getCreatedAt());

@@ -3,6 +3,7 @@ import { patientAPI } from '../../api/services'
 import { Card, Spinner, EmptyState } from '../../components/ui'
 import { FileText, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
+import { formatDoctorName } from '../../utils/formatters'
 
 export default function PatientMedicalRecords() {
   const [records, setRecords] = useState([])
@@ -32,7 +33,7 @@ export default function PatientMedicalRecords() {
             <Card key={r.id} className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <p className="font-bold text-slate-800">Visit — Dr. {r.doctorName}</p>
+                  <p className="font-bold text-slate-800">Visit — {formatDoctorName(r.doctorName)}</p>
                   <p className="text-sm text-slate-500 flex items-center gap-1 mt-0.5">
                     <Calendar size={12} /> {r.visitDate ? format(new Date(r.visitDate), 'MMMM dd, yyyy') : '—'}
                   </p>

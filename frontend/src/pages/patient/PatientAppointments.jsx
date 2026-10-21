@@ -4,6 +4,7 @@ import { Card, Badge, Modal, Button, Spinner, EmptyState } from '../../component
 import { Calendar, AlertCircle, RotateCcw } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
+import { formatDoctorName, getDoctorInitial, isUpcomingAppointment } from '../../utils/formatters'
 
 export default function PatientAppointments() {
   const [appointments, setAppointments] = useState([])
@@ -79,15 +80,15 @@ export default function PatientAppointments() {
 
                 {/* Doctor avatar */}
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center text-white font-bold flex-shrink-0">
-                  {apt.doctorName?.charAt(0) || 'D'}
+                  {getDoctorInitial(apt.doctorName)}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <p className="font-bold text-slate-800">Dr. {apt.doctorName}</p>
+                    <p className="font-bold text-slate-800">{formatDoctorName(apt.doctorName)}</p>
                     <Badge status={apt.status} />
                   </div>
-                  <p className="text-sm text-teal-600 mb-1">{apt.specialization}</p>
+                  <p className="text-sm text-teal-600 mb-1">{apt.specialization || apt.doctorSpecialization}</p>
                   <div className="flex flex-wrap gap-3 text-xs text-slate-500">
                     <span className="flex items-center gap-1">
                       <Calendar size={12} /> {apt.appointmentDate ? format(new Date(apt.appointmentDate), 'MMM dd, yyyy') : '—'}
@@ -104,9 +105,9 @@ export default function PatientAppointments() {
 
                 {/* Actions */}
                 <div className="flex gap-2 flex-shrink-0">
-                  {['PENDING', 'CONFIRMED'].includes(apt.status) && (
+                  {['PENDING', 'CONFIRMED'].includes(apt.status) && isUpcomingAppointment(apt.appointmentDate, apt.startTime) && (
                     <button onClick={() => setCancelModal(apt)}
-                      className="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-all">
+                      className="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-all cursor-pointer">
                       Cancel
                     </button>
                   )}
@@ -121,7 +122,7 @@ export default function PatientAppointments() {
       <Modal isOpen={!!cancelModal} onClose={() => setCancelModal(null)} title="Cancel Appointment">
         <div className="space-y-4">
           <p className="text-sm text-slate-600">
-            Cancelling appointment with <strong>Dr. {cancelModal?.doctorName}</strong> on {cancelModal?.appointmentDate}.
+            Cancelling appointment with <strong>{formatDoctorName(cancelModal?.doctorName)}</strong> on {cancelModal?.appointmentDate}.
           </p>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Reason for Cancellation *</label>

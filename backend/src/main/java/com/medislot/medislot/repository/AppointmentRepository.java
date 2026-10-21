@@ -48,4 +48,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     @Query("SELECT a FROM Appointment a WHERE a.doctor.id = :doctorId AND a.appointmentDate = :today ORDER BY a.tokenNumber ASC")
     List<Appointment> findTodayAppointmentsForDoctor(@Param("doctorId") Long doctorId, @Param("today") LocalDate today);
+
+    @Query("SELECT a FROM Appointment a WHERE a.status IN (com.medislot.medislot.entity.AppointmentStatus.CONFIRMED, com.medislot.medislot.entity.AppointmentStatus.PENDING) AND (a.appointmentDate < :today OR (a.appointmentDate = :today AND a.endTime < :now))")
+    List<Appointment> findPastUncompletedAppointments(@Param("today") LocalDate today, @Param("now") LocalTime now);
 }

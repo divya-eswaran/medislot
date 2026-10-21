@@ -4,6 +4,7 @@ import { Card, Button, Badge, Modal, Spinner } from '../../components/ui'
 import { Search, Filter, Star, Clock, Calendar, ChevronRight, User, CheckCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { format, addDays } from 'date-fns'
+import { formatDoctorName, getDoctorInitial } from '../../utils/formatters'
 
 export default function BookAppointment() {
   const [step, setStep] = useState(1) // 1=pick doctor, 2=pick slot, 3=confirm
@@ -33,7 +34,12 @@ export default function BookAppointment() {
   useEffect(() => {
     let d = doctors
     if (specFilter) d = d.filter(doc => doc.specializationId == specFilter || doc.specializationName === specFilter)
-    if (search) d = d.filter(doc => doc.name?.toLowerCase().includes(search.toLowerCase()))
+    if (search) {
+      d = d.filter(doc => {
+        const name = (doc.fullName || doc.name || '').toLowerCase()
+        return name.includes(search.toLowerCase())
+      })
+    }
     setFilteredDoctors(d)
   }, [search, specFilter, doctors])
 
@@ -137,10 +143,10 @@ export default function BookAppointment() {
                 onClick={() => handleSelectDoctor(doc)}>
                 <div className="flex items-start gap-4 mb-4">
                   <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
-                    {doc.name?.charAt(0)}
+                    {getDoctorInitial(doc.fullName || doc.name)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-slate-800 truncate">Dr. {doc.name}</h3>
+                    <h3 className="font-bold text-slate-800 truncate">{formatDoctorName(doc.fullName || doc.name)}</h3>
                     <p className="text-sm text-teal-600 font-medium">{doc.specializationName}</p>
                     <p className="text-xs text-slate-500 mt-0.5">{doc.qualification}</p>
                   </div>
@@ -176,10 +182,10 @@ export default function BookAppointment() {
             <Card className="p-5">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold">
-                  {selectedDoctor.name?.charAt(0)}
+                  {getDoctorInitial(selectedDoctor.fullName || selectedDoctor.name)}
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-800">Dr. {selectedDoctor.name}</h3>
+                  <h3 className="font-bold text-slate-800">{formatDoctorName(selectedDoctor.fullName || selectedDoctor.name)}</h3>
                   <p className="text-sm text-teal-600">{selectedDoctor.specializationName}</p>
                 </div>
               </div>
@@ -234,7 +240,7 @@ export default function BookAppointment() {
             <div className="bg-blue-50 rounded-xl p-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-600">Doctor</span>
-                <span className="font-semibold text-slate-800">Dr. {selectedDoctor.name}</span>
+                <span className="font-semibold text-slate-800">{formatDoctorName(selectedDoctor.fullName || selectedDoctor.name)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-600">Specialization</span>
@@ -290,7 +296,7 @@ export default function BookAppointment() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Doctor</span>
-                <span className="font-semibold">Dr. {success.doctorName}</span>
+                <span className="font-semibold">{formatDoctorName(success.doctorName)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Date & Time</span>
